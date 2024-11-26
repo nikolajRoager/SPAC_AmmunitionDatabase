@@ -1,0 +1,19 @@
+.logo {
+  height: 80px;
+  cursor: pointer;
+}
+
+.subtitle {
+  font-style: italic;
+  font-size: x-large;
+  color: black;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.themeFontColor {
+  color:khaki
+}
+
+tr {
+  cursor: pointer;
+}
