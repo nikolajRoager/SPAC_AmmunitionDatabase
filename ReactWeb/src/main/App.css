@@ -3,6 +3,12 @@
   cursor: pointer;
 }
 
+.error {
+  font-style: bold;
+  color:red
+}
+
+
 .subtitle {
   font-style: italic;
   font-size: x-large;
@@ -11,9 +17,97 @@
 }
 
 .themeFontColor {
-  color:khaki
+  color:black
 }
 
-tr {
+body
+{
+  background-color: beige;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid black;
+    background-color: blanchedalmond;
+}
+
+tfoot {
+    border-top: 2px solid black;
+    background: palegoldenrod;
+}
+thead {
+    border-bottom: 2px solid black;
+    border-top: 2px solid black;
+    background: palegoldenrod;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+.SortButon
+{
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  cursor:pointer;
+}
+
+.actionbutton
+{
+  text-align: center;
+  cursor:pointer;
+}
+
+button
+{
+  background-color: burlywood;
+}
+button:hover	
+{
+  background-color: burlywood;
+}
+
+tr:hover
+{
+  background-color:burlywood;
+}
+.maintabled:hover{
   cursor: pointer;
+}
+
+/*
+ Setup for forms, is copied from stackoverflow: https://stackoverflow.com/questions/13204002/align-form-elements-in-css because it looks right
+*/
+form {
+  width: 80%;
+  margin: 0 auto;
+}
+
+label,
+select,
+input {
+  /* In order to define widths */
+  display: inline-block;
+}
+
+label {
+  width: 30%;
+  /* Positions the label text beside the input */
+  text-align: right;
+}
+
+label+input,label+select {
+  width: 30%;
+  /* Large margin-right to force the next element to the new-line
+           and margin-left to create a gutter between the label and input */
+  margin: 0 30% 0 4%;
+}
+
+
+.submitbutton {
+  float: center;
 }

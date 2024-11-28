@@ -8,22 +8,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddCors();
 builder.Services.AddDbContext<AmmunitionContext>(opt =>
     opt.UseInMemoryDatabase("Ammunition"));
 builder.Services.AddScoped<IAmmunitionRepository,AmmunitionRepository>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors();
 
 var app = builder.Build();
 
 //TESTING Allow our testing site to access this
 //SHOULD BE REPLACED WITH ACTUAL SITE
-app.UseCors("http://localhost:3000");
+app.UseCors(p => p.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod());
 
 //// Initialize database from a file FOR TESTING ONLY!
-//// WARNING, THIS DELETES THE EXISTING DATABASE TABLES! DO NOT USE UNLESS YOU WANT TO DELETE ALL DATA
+//// WARNING, THIS DELETES THE EXISTING DATABASE TABLES! 
 ///
 //IDK if this is the best way of seeding a database
 using (var scope = app.Services.CreateScope())
@@ -37,15 +37,20 @@ using (var scope = app.Services.CreateScope())
 
 
         //Some quick example data, the depot locations are Cities (I do not know the actual locations of depots, obviously)
-        //The Brigades are the 5 artillery brigades in the Ukrainian Army
-        string[] Locs               = {"Kharkiv","Sumy","Dnipro","Kryvyi Rih","26th Brigade","43rd Brigade","44th Brigade","55th Brigade"};
-        Ammunition.Status[] statuses= {Ammunition.Status.Depot,Ammunition.Status.Depot,Ammunition.Status.Depot,Ammunition.Status.Depot,Ammunition.Status.Use,Ammunition.Status.Use,Ammunition.Status.Use,Ammunition.Status.Use,Ammunition.Status.Use
+        //The Brigades are the 5 artillery brigades in the Ukrainian Army, they both have a local storage, and combat regiment assignment
+        string[] Locs               = {"Kharkiv Strategic Depot","Sumy Strategic Depot","Dnipro Strategic Depot","Kryvyi Rih Strategic Depot","26th Brigade","40th Brigade","43rd Brigade","44th Brigade","55th Brigade","26th Brigade","40th Brigade","43rd Brigade","44th Brigade","55th Brigade"};
+        Ammunition.Status[] statuses= {Ammunition.Status.Depot,Ammunition.Status.Depot,Ammunition.Status.Depot,Ammunition.Status.Depot,
+        Ammunition.Status.Depot,Ammunition.Status.Depot,Ammunition.Status.Depot,Ammunition.Status.Depot,Ammunition.Status.Depot,
+        Ammunition.Status.Use,Ammunition.Status.Use,Ammunition.Status.Use,Ammunition.Status.Use,Ammunition.Status.Use
         };
         int[] Sizes = {1500000,500000,800000,600000,//Sizes of depots
-        10000,20000,15000,17000,14000};//Stocks of the brigades
+        10000,20000,15000,17000,14000,//Stocks of the brigades
+        1200,2400,1300,1800,1300//In combat use right now (In this example around 10% of the stock)
+        };
 
         for (int i = 0; i < Locs.Count(); ++i)
         {
+            //For the 5 Brigades, a fraction of the shells will be in use
             //Some example ammunition types:
             //Excalibur (famously overpriced and unreliable)
             context.Ammunitions.Add( new Ammunition {
@@ -53,7 +58,7 @@ using (var scope = app.Services.CreateScope())
                 Quantity=(int)(Sizes[i]*0.004),//Overpriced means that there is not a lot of this
                 Caliber=155,
                 type = Ammunition.Type.HE,
-                status=Ammunition.Status.Depot,
+                status=statuses[i],
                 Guidance=true,
                 Location=Locs[i]
             });
@@ -63,7 +68,7 @@ using (var scope = app.Services.CreateScope())
                 Quantity=(int)(Sizes[i]*0.146),
                 Caliber=155,
                 type = Ammunition.Type.AP,
-                status=Ammunition.Status.Depot,
+                status=statuses[i],
                 Guidance=false,
                 Location=Locs[i]
             });
@@ -73,7 +78,7 @@ using (var scope = app.Services.CreateScope())
                 Quantity=(int)(Sizes[i]*0.20),
                 Caliber=155,
                 type = Ammunition.Type.HE,
-                status=Ammunition.Status.Depot,
+                status=statuses[i],
                 Guidance=false,
                 Location=Locs[i]
             });
@@ -82,7 +87,7 @@ using (var scope = app.Services.CreateScope())
                 Quantity=(int)(Sizes[i]*0.25),
                 Caliber=152,
                 type = Ammunition.Type.Cluster,
-                status=Ammunition.Status.Depot,
+                status=statuses[i],
                 Guidance=false,
                 Location=Locs[i]
             });
@@ -92,7 +97,7 @@ using (var scope = app.Services.CreateScope())
                 Quantity=(int)(Sizes[i]*0.4),
                 Caliber=152,
                 type = Ammunition.Type.HE,
-                status=Ammunition.Status.Depot,
+                status=statuses[i],
                 Guidance=false,
                 Location=Locs[i]
             });
@@ -102,7 +107,7 @@ using (var scope = app.Services.CreateScope())
                 Quantity=(int)(Sizes[i]*0.05),
                 Caliber=203,
                 type = Ammunition.Type.HE,
-                status=Ammunition.Status.Depot,
+                status=statuses[i],
                 Guidance=false,
                 Location=Locs[i]
             });
@@ -112,7 +117,7 @@ using (var scope = app.Services.CreateScope())
                 Quantity=(int)(Sizes[i]*0.1),
                 Caliber=100,
                 type = Ammunition.Type.HE,
-                status=Ammunition.Status.Depot,
+                status=statuses[i],
                 Guidance=false,
                 Location=Locs[i]
             });
