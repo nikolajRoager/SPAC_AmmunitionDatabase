@@ -68,5 +68,33 @@ const useDeleteAmmunition = () =>
     });
 }
 
+const useSendAmmunition = () =>
+{
+    const queryClient = useQueryClient();
+    const nav = useNavigate();
+
+    type InputType =
+    {
+        Ammo : Ammunition,
+        quantity : number,
+        destination : string
+    }
+
+    return useMutation<AxiosResponse, AxiosError,InputType>({
+        //mutationFn: async (A : Ammunition,quantity : number,destination : string) => {
+        mutationFn: async (A : InputType) => {
+            console.log('HERE IS');
+            return await axios.put(`${config.ApiUrlBase}/Send/${A.Ammo.id}`,null, {params:{Quantity : A.quantity, destination : A.destination}})
+        },
+        onSuccess: (_, A)=>{
+            console.log('Arrived');
+            //Drop the cache for all ammunitions
+            queryClient.invalidateQueries({queryKey:["Ammunitions"]})
+            //Go to root
+            nav(`/AmmoBatch/${A.Ammo.id}`);}
+    });
+}
+
+
 export default useFetchAmmunitions;
-export {useFetchSingleAmmunition,useAddAmmunition,useDeleteAmmunition,useUpdateAmmunition};
+export {useFetchSingleAmmunition,useAddAmmunition,useDeleteAmmunition,useUpdateAmmunition,useSendAmmunition};

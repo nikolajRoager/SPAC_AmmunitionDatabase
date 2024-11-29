@@ -24,4 +24,19 @@ public class Ammunition
     //Can either be an Ammunition depot, or a military unit (In this example, it will be Brigades)
     //For Ammunition in transit, the location is that of the final destination (Even if it technically is still in the old location)
     public string Location {get; set;}="Null";
+
+    //Default constructor
+    public Ammunition(){}
+
+    //Copy constructor
+    public Ammunition(Ammunition other)
+    {
+        Id=other.Id;
+        Quantity=other.Quantity;
+        Caliber=other.Caliber;
+        status=other.status;
+        type=other.type;
+        Guidance=other.Guidance;
+        Location=other.Location;
+    }
 }

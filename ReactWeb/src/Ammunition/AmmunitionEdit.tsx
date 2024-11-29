@@ -15,7 +15,6 @@ const AmmunitionEdit = () => {
 
   return (
     <div>
-        <h1>Advanced editing form</h1>
         <AmmunitionForm
             ammunition={data}
             submitted={a => updateAmmunitionMutation.mutate(a)}

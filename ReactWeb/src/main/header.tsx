@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.svg'
 
 type Args = {
@@ -5,8 +6,9 @@ type Args = {
 }
 
 const Header = ({subtitle} : Args) =>{
+    const nav = useNavigate();
     return (
-        <header className='row mb-4'>
+        <header className='row mb-4' onClick={()=>nav("/")}>
             <div className='col-4'>
                 <img
                     src={logo}

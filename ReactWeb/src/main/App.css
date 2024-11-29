@@ -33,6 +33,7 @@ table {
     background-color: blanchedalmond;
 }
 
+
 tfoot {
     border-top: 2px solid black;
     background: palegoldenrod;
@@ -110,4 +111,25 @@ label+input,label+select {
 
 .submitbutton {
   float: center;
+}
+
+
+.tabbed,.tabbed:hover
+{
+  background-color: palegoldenrod;
+  font-family: Arial, Helvetica, sans-serif;
+  cursor: default; 
+  border: none
+}
+
+.tabheaderUnselected
+{
+  border: 2px black solid;
+  cursor: pointer;
+  background-color: burlywood;
+}
+
+.tabheaderSelected,.tabheaderUnselected:hover
+{
+  background-color: palegoldenrod;
 }

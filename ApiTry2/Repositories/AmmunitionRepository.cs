@@ -18,6 +18,9 @@ public interface IAmmunitionRepository
     public Task<AmmunitionDTO?> UpdateAmmoAsync(AmmunitionDTO A);
     
     public Task DeleteAmmoAsync(int id);
+
+
+    public Task<AmmunitionDTO> SendAmmo(int id, int Quantity, string destination);
 }
 
 class AmmunitionRepository : IAmmunitionRepository
@@ -118,5 +121,63 @@ class AmmunitionRepository : IAmmunitionRepository
         }
         else
             throw new ArgumentException($"Illegal ID:{id} to delete");
+    }
+
+    /// <summary>
+    /// Send quantity ammo from id to destination, and return the remaining batch at id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="Quantity"></param>
+    /// <param name="destination"></param>
+    /// <returns></returns>
+    public async Task<AmmunitionDTO> SendAmmo(int id, int Quantity, string destination)
+    {
+        var ammunition =  await context.Ammunitions.FirstOrDefaultAsync(A => A.Id==id);
+        if (ammunition==null)
+            throw new Exception($"No batch has id {id}");
+        else
+        {
+            if (ammunition.status!=0)
+                throw new Exception($"Can only send from batch in storage, this is {ammunition.status.ToString()}");
+            //Verify that the quantity is valid
+            if (ammunition.Quantity<Quantity)
+            {
+                throw new Exception($"Not enough ammunition in batch to ship (Has {ammunition.Quantity} trying to send {Quantity})");
+            }else if (ammunition.Quantity==Quantity)
+            {//Just switch the status and owner of this thing
+
+                //Send to ourself = put in use
+                if (ammunition.Location==destination)
+                    ammunition.status=Ammunition.Status.Use;
+                else
+                    ammunition.status=Ammunition.Status.Transit;
+                ammunition.Location=destination;
+            }
+            else//Send delivery and keep  original as smaller
+            {
+                //Copy all basic stats, but fix the quantity
+                var delivery=new Ammunition
+                {
+                    //Leave Id explicitly undefined, it is going to be set to the next id
+                    Quantity=Quantity,
+                    Caliber =ammunition.Caliber,
+                    type    = ammunition.type,
+                    status  =ammunition.Location==destination ? Ammunition.Status.Use : Ammunition.Status.Transit,//Send to self=put into use
+                    Guidance=ammunition.Guidance,
+                    Location=destination
+                };
+                //Then fix the numbers, and location
+                ammunition.Quantity-=Quantity;
+
+                //Send it off
+                await context.Ammunitions.AddAsync(delivery);
+           }
+            //Update this state
+            context.Ammunitions.Entry(ammunition).State=EntityState.Modified;
+            context.SaveChanges();
+
+            //Return the original ammunition
+            return toDTO(ammunition);
+        }
     }
 }

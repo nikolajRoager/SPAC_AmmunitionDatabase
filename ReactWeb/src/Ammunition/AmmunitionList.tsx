@@ -126,10 +126,13 @@ const AmmunitionList=()=>
                     </th>
                 </thead>
                 <tbody>
-                    {ammunitionList && ammunitionList.map((A)=>(//Ammunitions.map((A)=>(
+                    {ammunitionList && ammunitionList.map((A,index)=>(//Ammunitions.map((A)=>(
                         <tr key={A.id}>
                             <td>
-                                <button className="actionbutton">
+                                <button className="actionbutton"
+                                
+                                    onClick={()=>nav(`/AmmoBatch/${A.id}?tab=0`)/*Simply go to the tab which handles shipment or whatever*/}
+                                >
                                 {
                                     //Combat regiments can not ship their ammunition
                                     (A.shellStatusEnum==1? "Arrived" : A.shellStatusEnum==0? "Send" : "return")
@@ -138,13 +141,11 @@ const AmmunitionList=()=>
                             </td>
                             <td>
                                 <button className="actionbutton"
-                                
-                                
                                 onClick={()=>{
-                                    if (window.confirm("Register entire batch as lost?"))
+                                    if (window.confirm("Register entire batch as lost? This can not be undone"))
                                         deleteAmmunitionMutation.mutate(A);
-                                    //Force a reload of this page
-                                    window.location.reload()
+
+                                    delete ammunitionList[index];
                                 }}
                                 >
                                 All lost

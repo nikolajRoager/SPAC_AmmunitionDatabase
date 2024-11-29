@@ -63,6 +63,35 @@ const AmmunitionForm = ({ ammunition, submitted}: Args)=>
             />
         </div>
         <div className="form-group mt-2">
+            <label htmlFor="type">Warhead type</label>
+            <select
+            className="form-control"
+            value={ammunitionState.shellType}
+            onChange={(e) =>
+                {
+                    switch (e.target.value)
+                    {
+                        default:
+                        case "HE":
+                            setAmmunitionState({ ...ammunitionState, shellTypeEnum: 0, shellType: e.target.value})
+                        break;
+                        case "AP":
+                            setAmmunitionState({ ...ammunitionState, shellTypeEnum: 1, shellType: e.target.value})
+                        break;
+                        case "Cluster":
+                            setAmmunitionState({ ...ammunitionState, shellTypeEnum: 2, shellType: e.target.value})
+                        break;
+
+                    }
+                }
+            }
+            >
+                <option value="HE">HE (high Explosive)</option>
+                <option value="AP">AP (armour piercing)</option>
+                <option value="Cluster">Cluster</option>
+            </select>
+        </div>
+        <div className="form-group mt-2">
             <label htmlFor="status">Current status</label>
             <select
             className="form-control"

@@ -23,6 +23,7 @@ public class AmmoController : ControllerBase
     [HttpGet("GetAll")]
     public async Task<ActionResult<IEnumerable<AmmunitionDTO>>> Get()
     {
+        Console.WriteLine("Get");
         var List =await ammunitionRepository.GetAll();
         if (List==null || List.Count()==0)
             return NoContent();
@@ -48,6 +49,7 @@ public class AmmoController : ControllerBase
     [HttpPost("Post")]
     public async Task<ActionResult<AmmunitionDTO>> PostAmmo(AmmunitionDTO Ammo)
     {
+        Console.WriteLine("post");
         try
         {
             //Add it to the repository, then save
@@ -75,11 +77,10 @@ public class AmmoController : ControllerBase
     [HttpPut("Put/{id}")]
     public async Task<ActionResult<AmmunitionDTO>> PutAmmo(int id, AmmunitionDTO product)
     {
-        Console.WriteLine($"Received put request: {id} {product}");
+        Console.WriteLine("put");
 
         if (id != product.Id)
         {
-            Console.WriteLine($"Returned bad request : {id} {product}");
             return BadRequest();
         }
         try
@@ -88,54 +89,46 @@ public class AmmoController : ControllerBase
             var productToUpdate = await ammunitionRepository.UpdateAmmoAsync(product);
             if (productToUpdate == null)
             {
-                Console.WriteLine($"Returned not found : {id} {product}");
                 return NotFound();
             }
-            Console.WriteLine($"awaiting saving : {id} {product}");
             await ammunitionRepository.SaveChanges();
 
-            Console.WriteLine($"done");
             //If we got here it is ok, return that we modified this, and the destination to get it back
             return AcceptedAtAction(nameof(Get), new {id=productToUpdate.Id}, productToUpdate);
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Returned error : {id} {product}");
             //This is mainly for debugging, I do not expect an end user to be able to understand this
             return BadRequest("There was an error updating the Ammunition batch, got serverside error: "+e.Message);
         }
     }
 
+
     /// <summary>
-    /// Simpler put function, which only allows modifying current status
+    /// Create a new shipment batch, by splitting it of from batch id, and sending it to the destination
     /// </summary>
     /// <param name="id"></param>
-    /// <param name="Status"></param>
+    /// <param name="Quantity"></param>
+    /// <param name="destination"></param>
     /// <returns></returns>
-    [HttpPut("Put/{id}/status")]
-    public async Task<ActionResult<AmmunitionDTO>> SetAmmoStatus(int id, int Status)
+    [HttpPut("Send/{id}")]
+    public async Task<ActionResult<AmmunitionDTO>> SendAmmo(int id, [FromQuery] int Quantity, [FromQuery] string destination)
     {
-        Console.WriteLine($"Received put request: {id}.status to {Status}");
-
-        if (Status<0 || Status>Enum.GetValues(typeof(Ammunition.Status)).Length-1)
-            return BadRequest($"Status {Status} is outside range");
+        Console.WriteLine($"received send from {id}, sending: {Quantity}, {destination} ");
+        AmmunitionDTO Out;
         try
         {
-
-            //Add it to the repository, then save
-            var added = ammunitionRepository.Get(id);
-            //The repository doesn't save automatically, because I want to be able to make multiple changes, and only save if everything is fine
-            await ammunitionRepository.SaveChanges();
-
-            //Show the user where they can find it
-            return CreatedAtAction(nameof(Get), new {id=added.Id}, added);
+            Out=await ammunitionRepository.SendAmmo(id,Quantity,destination);
         }
         catch (Exception e)
         {
+            Console.WriteLine(e.Message);
             //This is mainly for debugging, I do not expect an end user to be able to understand this
-            return BadRequest("There was an error updating the Ammunition batch, got serverside error: "+e.Message);
+            return BadRequest(e.Message);
         }
+        return Out;
     }
+
 
     /// <summary>
     /// Http Delete function
